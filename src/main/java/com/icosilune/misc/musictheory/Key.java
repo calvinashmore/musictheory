@@ -34,7 +34,12 @@ abstract public class Key {
     /**
      * index+size goes up an octave
      */
-    abstract List<Integer> diatonicChord(int index);
+    abstract Chord diatonicChord(int index);
+
+    boolean contains(int value) {
+        value = Math.floorDiv(value, CHROMATIC_SCALE);
+        return notes().contains(value);
+    }
 
     abstract static class SimpleKey extends Key {
         private final int rootNote;
@@ -76,21 +81,21 @@ abstract public class Key {
         }
 
         @Override
-        List<Integer> diatonicChord(int index) {
+        Chord diatonicChord(int index) {
 
-            int octave = index / 7;
+            int octave = Math.floorDiv(index, 7);
             index = index - octave*7; // relative shift within octave
 
             int R = notes().get(index) + octave*CHROMATIC_SCALE;
 
             switch (index) {
-                case 0: return chordMajor(R);
-                case 1: return chordMinor(R);
-                case 2: return chordMinor(R);
-                case 3: return chordMajor(R);
-                case 4: return chordMajor(R);
-                case 5: return chordMinor(R);
-                case 6: return chordDiminished(R);
+                case 0: return Chord.major(R);
+                case 1: return Chord.minor(R);
+                case 2: return Chord.minor(R);
+                case 3: return Chord.major(R);
+                case 4: return Chord.major(R);
+                case 5: return Chord.minor(R);
+                case 6: return Chord.diminished(R);
             }
 
             throw new IllegalStateException();
@@ -119,7 +124,7 @@ abstract public class Key {
         }
 
         @Override
-        List<Integer> diatonicChord(int index) {
+        Chord diatonicChord(int index) {
 
             int octave = index / 7;
             index = index - octave*7; // relative shift within octave
@@ -127,28 +132,16 @@ abstract public class Key {
             int R = notes().get(index) + octave*CHROMATIC_SCALE;
 
             switch (index) {
-                case 0: return chordMinor(R);
-                case 1: return chordDiminished(R);
-                case 2: return chordMajor(R);
-                case 3: return chordMinor(R);
-                case 4: return chordMinor(R);
-                case 5: return chordMajor(R);
-                case 6: return chordMajor(R);
+                case 0: return Chord.minor(R);
+                case 1: return Chord.diminished(R);
+                case 2: return Chord.major(R);
+                case 3: return Chord.minor(R);
+                case 4: return Chord.minor(R);
+                case 5: return Chord.major(R);
+                case 6: return Chord.major(R);
             }
 
             throw new IllegalStateException();
         }
-    }
-
-    private static List<Integer> chordMajor(int root) {
-        return ImmutableList.of(root, root+4, root+7);
-    }
-
-    private static List<Integer> chordMinor(int root) {
-        return ImmutableList.of(root, root+3, root+7);
-    }
-
-    private static List<Integer> chordDiminished(int root) {
-        return ImmutableList.of(root, root+3, root+6);
     }
 }
