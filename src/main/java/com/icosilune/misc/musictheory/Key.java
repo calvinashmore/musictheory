@@ -23,11 +23,12 @@ abstract public class Key {
 
     /**
      * Notes in the scale, in indices, values >=0 < 12.
+     * Later on maybe figure out how to make naming work...
      */
     abstract public List<Integer> notes();
 
     /**
-     * how many notes there are in the key, within an octave
+     * how many notes there are in the key, within an octave. Generally 7...
      */
     abstract int size();
 
@@ -37,8 +38,12 @@ abstract public class Key {
     abstract Chord diatonicChord(int index);
 
     boolean contains(int value) {
-        value = Math.floorDiv(value, CHROMATIC_SCALE);
+        value = value - CHROMATIC_SCALE * Math.floorDiv(value, CHROMATIC_SCALE);
         return notes().contains(value);
+    }
+
+    boolean contains(Chord chord) {
+        return chord.indices().stream().allMatch(this::contains);
     }
 
     abstract static class SimpleKey extends Key {

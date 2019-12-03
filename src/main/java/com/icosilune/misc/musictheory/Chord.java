@@ -1,6 +1,8 @@
 package com.icosilune.misc.musictheory;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Streams;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,11 +14,13 @@ public class Chord {
     private ImmutableList<Integer> indices;
 
     /**
-     * Contract and assumptions:
-     * indices are in increasing order (first is lowest), non-repeating, and N usually 3 or 4
+     * indices are in increasing order (first is lowest), non-repeating, and N usually 3 or 4. No repeats
      */
     Chord(Iterable<Integer> indices) {
-        this.indices = ImmutableList.copyOf(indices);
+        this.indices = Streams.stream(indices)
+                .distinct()
+                .sorted()
+                .collect(ImmutableList.toImmutableList());
     }
     Chord(int... indices) {
         this(Arrays.stream(indices).boxed().collect(ImmutableList.toImmutableList()));
@@ -83,5 +87,12 @@ public class Chord {
 
     public static Chord sus2(int root) {
         return new Chord(root, root+2, root+7);
+    }
+
+    public static Chord harmonizeUp(Chord other) {
+        return new Chord(Iterables.concat(other.indices, ImmutableList.of(other.indices.get(0)+12)));
+    }
+    public static Chord harmonizeDown(Chord other) {
+        return new Chord(Iterables.concat(other.indices, ImmutableList.of(other.indices.get(0)-12)));
     }
 }
