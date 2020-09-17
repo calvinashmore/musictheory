@@ -15,14 +15,6 @@ import java.util.Arrays;
 
 public class KeySelector extends JPanel {
 
-  public static void main(String args[]) {
-    JFrame frame = new JFrame();
-    frame.add(new KeySelector());
-    frame.pack();
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setVisible(true);
-  }
-
   interface KeyListener {
     void onHover(Key key, boolean hovering);
 
@@ -41,14 +33,16 @@ public class KeySelector extends JPanel {
     setLayout(new GridLayout(2, 13));
 
     add(new JLabel("maj"));
-    for(int i=0;i<12;i++) {
+    for (int i = 0; i < 12; i++) {
       add(new KeyButton(Key.major(i)));
     }
 
     add(new JLabel("min"));
-    for(int i=0;i<12;i++) {
+    for (int i = 0; i < 12; i++) {
       add(new KeyButton(Key.minor(i)));
     }
+
+    setKey(Key.major(0));
   }
 
   void setKey(Key key) {
@@ -57,7 +51,7 @@ public class KeySelector extends JPanel {
     Arrays.stream(getComponents())
         .filter(KeyButton.class::isInstance)
         .map(KeyButton.class::cast)
-        .forEach(button -> button.setSelected(button.key == key));
+        .forEach(button -> button.setSelected(button.key.equals(key)));
   }
 
   class KeyButton extends JToggleButton {
@@ -87,6 +81,9 @@ public class KeySelector extends JPanel {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
           setKey(key);
+          if (keyListener != null) {
+            keyListener.onClick(key);
+          }
         }
       });
     }

@@ -3,6 +3,7 @@ package com.icosilune.misc.musictheory.math;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
+import java.util.Objects;
 
 abstract public class Key {
 
@@ -68,9 +69,21 @@ abstract public class Key {
     public int size() {
       return 7;
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if(!(o instanceof SimpleKey)) return false;
+      SimpleKey simpleKey = (SimpleKey) o;
+      return rootNote == simpleKey.rootNote && notes().equals(simpleKey.notes());
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(rootNote, notes());
+    }
   }
 
-  static class MajorKey extends SimpleKey {
+  public static class MajorKey extends SimpleKey {
     private ImmutableList<Note> notes;
 
     MajorKey(int rootNote) {
@@ -156,7 +169,7 @@ abstract public class Key {
     }
   }
 
-  static class MinorKey extends SimpleKey {
+  public static class MinorKey extends SimpleKey {
     private ImmutableList<Note> notes;
 
     MinorKey(int rootNote) {
