@@ -1,22 +1,32 @@
 package com.icosilune.misc.musictheory;
 
-import javax.sound.sampled.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.List;
+import com.icosilune.misc.musictheory.math.Chord;
+import com.icosilune.misc.musictheory.math.Key;
+import com.icosilune.misc.musictheory.math.Note;
+
 import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String args[]) throws Exception {
 
-        Key k = Key.major(0);
+
+//        double C = 261.6 *2;
+////        double f1 = C * 1 / 2;
+////        double f2 = C * 44 / 73;
+//        Waveform w = Waveform.add(
+//        Waveform.simple(Oscillator.SINE, 1.0, f1),
+//                Waveform.simple(Oscillator.SINE, 1.0, f2));
+//        Sound.create(w, 2.0).playBlocking();
+
+
+        Key k = Key.major(1);
 
         System.out.println(k.notes());
 
-        for(int i : k.notes()) {
-            Chord ch = Chord.sus2(i);
-            System.out.println(i+": "+ch + ": "+k.contains(ch));
+        for(Note i : k.notes()) {
+            //Chord ch = Chord.sus2(i.getIndex());
+            System.out.println(k+"   "+i+": "+k.diatonicChord(i.getPosition()));
         }
 
 

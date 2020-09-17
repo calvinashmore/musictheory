@@ -1,12 +1,10 @@
-package com.icosilune.misc.musictheory;
+package com.icosilune.misc.musictheory.math;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Spliterator;
 
 public class Chord {
     // this class operates on chromatic scale: assume octave is 12 steps
@@ -26,6 +24,7 @@ public class Chord {
         this(Arrays.stream(indices).boxed().collect(ImmutableList.toImmutableList()));
     }
 
+    // This does not correctly represent roots of inversions
     int root() {
         return indices.get(0);
     }
