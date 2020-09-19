@@ -4,9 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.icosilune.misc.musictheory.math.Chord;
 import com.icosilune.misc.musictheory.math.Key;
 
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,9 +26,10 @@ public class ChordSelector extends JPanel {
 
   private static final ImmutableList<String> MAJOR_NAMES = ImmutableList.of("I", "ii", "iii", "IV", "V", "vi", "vii°");
   private static final ImmutableList<String> MINOR_NAMES = ImmutableList.of("i", "ii°", "III", "iv", "v", "VI", "VII");
-  private static final ImmutableList<String> INVERSIONS = ImmutableList.of("","₁","₂");
+  private static final ImmutableList<String> INVERSIONS = ImmutableList.of("", "₁", "₂");
 
   private Key key;
+  private int octaveOffset = 0;
   private ChordListener chordListener;
 
   private final ChordButton[][] diatonics = new ChordButton[3][7];
@@ -46,8 +50,17 @@ public class ChordSelector extends JPanel {
         diatonicsPanel.add(chordButton);
       }
     }
-
     add(diatonicsPanel);
+
+    JPanel octavePanel = new JPanel();
+    octavePanel.setLayout(new BoxLayout(octavePanel, BoxLayout.Y_AXIS));
+    ButtonGroup octaveButtonGroup = new ButtonGroup();
+    for (int i = -2; i < 2; i++) {
+      OctaveButton octaveButton = new OctaveButton(i);
+      octavePanel.add(octaveButton);
+      octaveButtonGroup.add(octaveButton);
+    }
+    add(octavePanel);
 
     setKey(Key.major(0));
   }
@@ -66,10 +79,10 @@ public class ChordSelector extends JPanel {
         ChordButton chordButton = diatonics[i][j];
         chordButton.chord = chord;
 
-        if(key instanceof Key.MajorKey) {
-          chordButton.setText(MAJOR_NAMES.get(j)+INVERSIONS.get(i));
+        if (key instanceof Key.MajorKey) {
+          chordButton.setText(MAJOR_NAMES.get(j) + INVERSIONS.get(i));
         } else {
-          chordButton.setText(MINOR_NAMES.get(j)+INVERSIONS.get(i));
+          chordButton.setText(MINOR_NAMES.get(j) + INVERSIONS.get(i));
         }
         chord = Chord.invert1(chord);
       }
@@ -82,7 +95,7 @@ public class ChordSelector extends JPanel {
 
     // Calculates the chord given the octave
     private Chord calcChord() {
-      return chord;
+      return Chord.shiftOctave(chord, octaveOffset);
     }
 
     ChordButton() {
@@ -109,6 +122,22 @@ public class ChordSelector extends JPanel {
           if (chordListener != null) {
             chordListener.onClick(calcChord());
           }
+        }
+      });
+    }
+  }
+
+  private class OctaveButton extends JRadioButton {
+    private final int octave;
+
+    OctaveButton(int octave) {
+      super("oct " + octave);
+      this.octave = octave;
+
+      addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+          octaveOffset = octave;
         }
       });
     }

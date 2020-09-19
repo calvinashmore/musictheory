@@ -96,6 +96,12 @@ public class Chord {
     return new Chord(Iterables.concat(other.indices, ImmutableList.of(other.indices.get(0) - 12)));
   }
 
+  public static Chord shiftOctave(Chord other, int octaveShift) {
+    return new Chord(other.indices.stream()
+        .map(index -> index + octaveShift * 12)
+        .collect(ImmutableList.toImmutableList()));
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
