@@ -14,13 +14,30 @@ public class Sound {
       false  // bigendian
   );
 
+  private static final double FADE = 0.1;
 
   public static Sound create(Waveform waveform, double length) throws IOException, LineUnavailableException {
+    return create(waveform, length, t -> {
+      if (t < FADE) {
+        return t / FADE;
+      } else if (t > length - FADE) {
+        return (length - t) / FADE;
+      } else {
+        return 1.0;
+      }
+    });
+  }
+
+  /**
+   * Envelope is a function of t from [0,length)
+   */
+  public static Sound create(Waveform waveform, double length, Function<Double, Double> envelope)
+      throws IOException, LineUnavailableException {
     byte[] tone = new byte[(int) (SAMPLE_RATE * length)];
 
     for (int i = 0; i < tone.length; i++) {
       double t = (1.0 * i) / SAMPLE_RATE;
-      double v = waveform.evaluate(t);
+      double v = waveform.evaluate(t) * envelope.apply(t);
       v = Math.max(-1, Math.min(1, v));
 
       tone[i] = (byte) (127.0 * v);
